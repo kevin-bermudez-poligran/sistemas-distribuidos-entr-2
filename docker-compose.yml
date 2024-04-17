@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  python_sist_dist:
+    container_name: pythoh_sist_dist_container
+    build: .
+    volumes:
+      - ./server.py:/server.py
+    ports:
+      - "8109:80"
+    networks:
+      - app_network
+    depends_on:
+      - db_sist_dist
+    restart: always
+  python_sist_dist_client:
+    container_name: pythoh_sist_dist_client_container
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    tty: true
+    volumes:
+      - ./client.py:/client.py
+    networks:
+      - app_network
+    depends_on:
+      - db_sist_dist
+      - python_sist_dist
+    restart: always
+  db_sist_dist:
+    image: mysql:5.6.41
+    restart: always
+    container_name: db_sist_dist_container
+    environment:
+        MYSQL_DATABASE: sist_dist_poligran
+        MYSQL_ROOT_PASSWORD: sist_dist_poligran
+    ports:
+      - "3326:3306"
+    networks:
+      - app_network
+
+networks:
+  app_network:
